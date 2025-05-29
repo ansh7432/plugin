@@ -1,19 +1,24 @@
-id: simple-test-plugin
-name: Simple Test Plugin
+id: kubestellar-cluster-plugin
+name: KubeStellar Cluster Management
 version: 1.0.0
-description: A simple test plugin for GitHub installation testing
+description: Plugin for cluster onboarding and detachment operations with real functionality
 author: Ishaan Soni
 compatibility:
   kubestellar: '>=0.21.0'
   go: '>=1.21'
 endpoints:
-  - path: /health
+  - path: /onboard
+    method: POST
+    handler: OnboardClusterHandler
+  - path: /detach
+    method: POST
+    handler: DetachClusterHandler
+  - path: /status
     method: GET
-    handler: HealthHandler
-    description: Health check endpoint
-  - path: /info
-    method: GET
-    handler: InfoHandler
-    description: Plugin information endpoint
-dependencies: []
-permissions: []
+    handler: GetClusterStatusHandler
+dependencies:
+  - kubectl
+  - clusteradm
+permissions:
+  - cluster.read
+  - cluster.write
