@@ -1,12 +1,19 @@
-name: "Sample Plugin"
-id: "sample-plugin"
-version: "1.0.0"
-author: "Your Name"
-description: "A sample plugin for KubeStellar"
-official: false
+id: simple-test-plugin
+name: Simple Test Plugin
+version: 1.0.0
+description: A simple test plugin for GitHub installation testing
+author: Ishaan Soni
+compatibility:
+  kubestellar: '>=0.21.0'
+  go: '>=1.21'
 endpoints:
-  - path: "/health"
-    method: "GET"
-    description: "Health check endpoint"
+  - path: /health
+    method: GET
+    handler: HealthHandler
+    description: Health check endpoint
+  - path: /info
+    method: GET
+    handler: InfoHandler
+    description: Plugin information endpoint
 dependencies: []
 permissions: []
