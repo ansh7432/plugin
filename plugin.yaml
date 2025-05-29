@@ -1,0 +1,12 @@
+name: "Sample Plugin"
+id: "sample-plugin"
+version: "1.0.0"
+author: "Your Name"
+description: "A sample plugin for KubeStellar"
+official: false
+endpoints:
+  - path: "/health"
+    method: "GET"
+    description: "Health check endpoint"
+dependencies: []
+permissions: []
