@@ -1,7 +1,7 @@
 package main
 
 import (
-
+    "encoding/json"
     "fmt"
     "log"
     "net/http"
@@ -11,7 +11,7 @@ import (
     "github.com/gin-gonic/gin"
 )
 
-// PluginMetadata contains plugin information - matches your backend's expected structure
+// This should match your backend's PluginMetadata exactly
 type PluginMetadata struct {
     ID             string                    `yaml:"id" json:"id"`
     Name           string                    `yaml:"name" json:"name"`
@@ -24,14 +24,13 @@ type PluginMetadata struct {
     Compatibility  map[string]string         `yaml:"compatibility" json:"compatibility"`
 }
 
-// EndpointConfig defines plugin endpoint configuration
 type EndpointConfig struct {
     Path    string `yaml:"path" json:"path"`
     Method  string `yaml:"method" json:"method"`
     Handler string `yaml:"handler" json:"handler"`
 }
 
-// KubestellarPlugin defines the interface that matches your backend's expectations
+// This interface should match what your backend expects
 type KubestellarPlugin interface {
     Initialize(config map[string]interface{}) error
     GetMetadata() PluginMetadata
@@ -40,13 +39,13 @@ type KubestellarPlugin interface {
     Cleanup() error
 }
 
-// TestClusterPlugin implements the KubestellarPlugin interface for cluster management testing
+// TestClusterPlugin implements the KubestellarPlugin interface
 type TestClusterPlugin struct {
     initialized bool
     mutex       sync.RWMutex
 }
 
-// Initialize initializes the test cluster plugin
+// Initialize initializes the plugin
 func (p *TestClusterPlugin) Initialize(config map[string]interface{}) error {
     p.mutex.Lock()
     defer p.mutex.Unlock()
@@ -56,11 +55,11 @@ func (p *TestClusterPlugin) Initialize(config map[string]interface{}) error {
     }
     
     p.initialized = true
-    log.Println("✅ Test Cluster Plugin initialized successfully")
+    log.Println("✅ TestClusterPlugin initialized successfully")
     return nil
 }
 
-// GetMetadata returns plugin metadata that matches your backend's expected structure
+// GetMetadata returns plugin metadata
 func (p *TestClusterPlugin) GetMetadata() PluginMetadata {
     return PluginMetadata{
         ID:          "kubestellar-cluster-plugin",
@@ -93,6 +92,9 @@ func (p *TestClusterPlugin) GetHandlers() map[string]gin.HandlerFunc {
 
 // Health performs a health check
 func (p *TestClusterPlugin) Health() error {
+    p.mutex.RLock()
+    defer p.mutex.RUnlock()
+    
     if !p.initialized {
         return fmt.Errorf("plugin not initialized")
     }
@@ -103,13 +105,16 @@ func (p *TestClusterPlugin) Health() error {
 func (p *TestClusterPlugin) Cleanup() error {
     p.mutex.Lock()
     defer p.mutex.Unlock()
+    
     p.initialized = false
-    log.Println("🧹 Test Cluster Plugin cleaned up")
+    log.Println("🧹 TestClusterPlugin cleaned up")
     return nil
 }
 
 // GetClusterStatusHandler handles cluster status requests
 func (p *TestClusterPlugin) GetClusterStatusHandler(c *gin.Context) {
+    log.Printf("📊 GetClusterStatusHandler called")
+    
     // Mock cluster data for testing
     clusters := []map[string]interface{}{
         {
@@ -124,13 +129,19 @@ func (p *TestClusterPlugin) GetClusterStatusHandler(c *gin.Context) {
             "message":      "Cluster onboarding in progress",
             "lastUpdated":  time.Now().Add(-5 * time.Minute).Format(time.RFC3339),
         },
+        {
+            "clusterName":  "prod-cluster-1",
+            "status":       "failed",
+            "message":      "Connection timeout during onboarding",
+            "lastUpdated":  time.Now().Add(-10 * time.Minute).Format(time.RFC3339),
+        },
     }
 
     summary := map[string]int{
-        "total":     2,
+        "total":     3,
         "ready":     1,
         "pending":   1,
-        "failed":    0,
+        "failed":    1,
         "detaching": 0,
     }
 
@@ -138,15 +149,20 @@ func (p *TestClusterPlugin) GetClusterStatusHandler(c *gin.Context) {
         "clusters": clusters,
         "summary":  summary,
         "timestamp": time.Now().Format(time.RFC3339),
+        "plugin": "GitHub Test Plugin",
     }
 
+    log.Printf("✅ Returning cluster status: %d clusters", len(clusters))
     c.JSON(http.StatusOK, response)
 }
 
 // OnboardClusterHandler handles cluster onboarding requests
 func (p *TestClusterPlugin) OnboardClusterHandler(c *gin.Context) {
+    log.Printf("🚀 OnboardClusterHandler called")
+    
     var request map[string]interface{}
     if err := c.ShouldBindJSON(&request); err != nil {
+        log.Printf("❌ Invalid request format: %v", err)
         c.JSON(http.StatusBadRequest, gin.H{
             "error": "Invalid request format",
             "details": err.Error(),
@@ -156,6 +172,7 @@ func (p *TestClusterPlugin) OnboardClusterHandler(c *gin.Context) {
 
     clusterName, exists := request["clusterName"]
     if !exists || clusterName == "" {
+        log.Printf("❌ Missing clusterName in request")
         c.JSON(http.StatusBadRequest, gin.H{
             "error": "clusterName is required",
         })
@@ -164,18 +181,25 @@ func (p *TestClusterPlugin) OnboardClusterHandler(c *gin.Context) {
 
     log.Printf("🚀 Mock onboarding cluster: %s", clusterName)
 
-    c.JSON(http.StatusOK, gin.H{
+    response := gin.H{
         "message":     fmt.Sprintf("Cluster '%s' onboarding started successfully", clusterName),
         "clusterName": clusterName,
         "status":      "pending",
         "timestamp":   time.Now().Format(time.RFC3339),
-    })
+        "plugin":      "GitHub Test Plugin",
+    }
+
+    log.Printf("✅ Onboarding request processed for cluster: %s", clusterName)
+    c.JSON(http.StatusOK, response)
 }
 
 // DetachClusterHandler handles cluster detachment requests  
 func (p *TestClusterPlugin) DetachClusterHandler(c *gin.Context) {
+    log.Printf("🗑️ DetachClusterHandler called")
+    
     var request map[string]interface{}
     if err := c.ShouldBindJSON(&request); err != nil {
+        log.Printf("❌ Invalid request format: %v", err)
         c.JSON(http.StatusBadRequest, gin.H{
             "error": "Invalid request format",
             "details": err.Error(),
@@ -185,6 +209,7 @@ func (p *TestClusterPlugin) DetachClusterHandler(c *gin.Context) {
 
     clusterName, exists := request["clusterName"]
     if !exists || clusterName == "" {
+        log.Printf("❌ Missing clusterName in request")
         c.JSON(http.StatusBadRequest, gin.H{
             "error": "clusterName is required",
         })
@@ -193,22 +218,42 @@ func (p *TestClusterPlugin) DetachClusterHandler(c *gin.Context) {
 
     log.Printf("🗑️ Mock detaching cluster: %s", clusterName)
 
-    c.JSON(http.StatusOK, gin.H{
+    response := gin.H{
         "message":     fmt.Sprintf("Cluster '%s' detachment started successfully", clusterName),
         "clusterName": clusterName,
         "status":      "detaching",
         "timestamp":   time.Now().Format(time.RFC3339),
-    })
+        "plugin":      "GitHub Test Plugin",
+    }
+
+    log.Printf("✅ Detachment request processed for cluster: %s", clusterName)
+    c.JSON(http.StatusOK, response)
 }
 
-// NewPlugin creates a new instance of the test cluster plugin
-// This is the required symbol that will be looked up when loading the plugin
+// NewPlugin creates a new instance of the plugin
+// This is the EXACT symbol name that your plugin manager will look for
 func NewPlugin() interface{} {
     log.Println("🏗️ Creating new TestClusterPlugin instance")
-    return &TestClusterPlugin{}
+    plugin := &TestClusterPlugin{}
+    
+    // Initialize the plugin immediately
+    if err := plugin.Initialize(nil); err != nil {
+        log.Printf("❌ Failed to initialize plugin: %v", err)
+        return nil
+    }
+    
+    return plugin
 }
 
+// Alternative symbol names in case your plugin manager looks for different ones
+var (
+    // These are common plugin symbol names
+    Plugin   = NewPlugin
+    GetPlugin = NewPlugin
+    CreatePlugin = NewPlugin
+    NewKubestellarPlugin = NewPlugin
+)
+
 func main() {
-    // This is required for Go plugins but won't be executed
     fmt.Println("This is a Go plugin, not a standalone executable")
 }
