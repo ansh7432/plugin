@@ -130,7 +130,7 @@ func (p *TestClusterPlugin) GetClusterStatusHandler(c *gin.Context) {
         },
         {
             "clusterName":  "prod-cluster-1",
-            "status":       "failed",  // ✅ ALSO FIX THIS (was "pending" but summary says "failed")
+            "status":       "ready",  // ✅ ALSO FIX THIS (was "pending" but summary says "failed")
             "message":      "Connection timeout during onboarding",
             "lastUpdated":  time.Now().Add(-10 * time.Minute).Format(time.RFC3339),
         },
@@ -138,9 +138,9 @@ func (p *TestClusterPlugin) GetClusterStatusHandler(c *gin.Context) {
 
     summary := map[string]int{
         "total":     3,
-        "ready":     2,  // ✅ UPDATE: test-cluster-1 + test-cluster-2
+        "ready":     3,  // ✅ UPDATE: test-cluster-1 + test-cluster-2
         "pending":   0,  // ✅ UPDATE: none pending now
-        "failed":    1,  // ✅ UPDATE: prod-cluster-1
+        "failed":    0,  // ✅ UPDATE: prod-cluster-1
         "detaching": 0,
     }
 
