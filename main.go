@@ -124,7 +124,7 @@ func (p *TestClusterPlugin) GetClusterStatusHandler(c *gin.Context) {
         },
         {
             "clusterName":  "gya", 
-            "status":       "ready",  // ✅ CHANGE THIS LINE
+            "status":       "failed",  // ✅ CHANGE THIS LINE
             "message":      "Cluster onboarding completed successfully",  // ✅ UPDATE MESSAGE TOO
             "lastUpdated":  time.Now().Add(-5 * time.Minute).Format(time.RFC3339),
         },
