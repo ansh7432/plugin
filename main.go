@@ -148,7 +148,7 @@ func (p *TestClusterPlugin) GetClusterStatusHandler(c *gin.Context) {
         "clusters": clusters,
         "summary":  summary,
         "timestamp": time.Now().Format(time.RFC3339),
-        "plugin": "GitHub Test Plugin v2", // ✅ VERSION BUMP TO VERIFY UPDATE
+        "plugin": "GitHub Test Plugin v5", // ✅ VERSION BUMP TO VERIFY UPDATE
     }
 
     log.Printf("✅ Returning cluster status: %d clusters", len(clusters))
