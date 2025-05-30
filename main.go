@@ -118,19 +118,19 @@ func (p *TestClusterPlugin) GetClusterStatusHandler(c *gin.Context) {
     clusters := []map[string]interface{}{
         {
             "clusterName":  "test-cluster-1",
-            "status":       "failed",
+            "status":       "ready",
             "message":      "niii bdlunga",
             "lastUpdated":  time.Now().Format(time.RFC3339),
         },
         {
             "clusterName":  "gya", 
-            "status":       "failed",  // ✅ CHANGE THIS LINE
+            "status":       "ready",  // ✅ CHANGE THIS LINE
             "message":      "Cluster onboarding completed successfully",  // ✅ UPDATE MESSAGE TOO
             "lastUpdated":  time.Now().Add(-5 * time.Minute).Format(time.RFC3339),
         },
         {
             "clusterName":  "prod-cluster-1",
-            "status":       "failed",  // ✅ ALSO FIX THIS (was "pending" but summary says "failed")
+            "status":       "ready",  // ✅ ALSO FIX THIS (was "pending" but summary says "failed")
             "message":      "Connection timeout during onboarding",
             "lastUpdated":  time.Now().Add(-10 * time.Minute).Format(time.RFC3339),
         },
