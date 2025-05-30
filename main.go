@@ -124,13 +124,13 @@ func (p *TestClusterPlugin) GetClusterStatusHandler(c *gin.Context) {
         },
         {
             "clusterName":  "test-cluster-2", 
-            "status":       "pending",
+            "status":       "ready",
             "message":      "Cluster onboarding in progress",
             "lastUpdated":  time.Now().Add(-5 * time.Minute).Format(time.RFC3339),
         },
         {
             "clusterName":  "prod-cluster-1",
-            "status":       "pending",
+            "status":       "ready",
             "message":      " timeout during onboarding",
             "lastUpdated":  time.Now().Add(-10 * time.Minute).Format(time.RFC3339),
         },
