@@ -123,7 +123,7 @@ func (p *TestClusterPlugin) GetClusterStatusHandler(c *gin.Context) {
             "lastUpdated":  time.Now().Format(time.RFC3339),
         },
         {
-            "clusterName":  "main badal gya", 
+            "clusterName":  "nii gya", 
             "status":       "pending",  // ✅ CHANGE THIS LINE
             "message":      "Cluster onboarding completed successfully",  // ✅ UPDATE MESSAGE TOO
             "lastUpdated":  time.Now().Add(-5 * time.Minute).Format(time.RFC3339),
