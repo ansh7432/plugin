@@ -119,7 +119,7 @@ func (p *TestClusterPlugin) GetClusterStatusHandler(c *gin.Context) {
         {
             "clusterName":  "test-cluster-1",
             "status":       "ready",
-            "message":      "HELLO",
+            "message":      "niii bdlunga",
             "lastUpdated":  time.Now().Format(time.RFC3339),
         },
         {
