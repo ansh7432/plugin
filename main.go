@@ -124,23 +124,23 @@ func (p *TestClusterPlugin) GetClusterStatusHandler(c *gin.Context) {
         },
         {
             "clusterName":  "test-cluster-2", 
-            "status":       "pending",
-            "message":      "Cluster onboarding in progress",
+            "status":       "ready",  // ✅ CHANGE THIS LINE
+            "message":      "Cluster onboarding completed successfully",  // ✅ UPDATE MESSAGE TOO
             "lastUpdated":  time.Now().Add(-5 * time.Minute).Format(time.RFC3339),
         },
         {
             "clusterName":  "prod-cluster-1",
-            "status":       "pending",
-            "message":      " timeout during onboarding",
+            "status":       "failed",  // ✅ ALSO FIX THIS (was "pending" but summary says "failed")
+            "message":      "Connection timeout during onboarding",
             "lastUpdated":  time.Now().Add(-10 * time.Minute).Format(time.RFC3339),
         },
     }
 
     summary := map[string]int{
         "total":     3,
-        "ready":     1,
-        "pending":   1,
-        "failed":    1,
+        "ready":     2,  // ✅ UPDATE: test-cluster-1 + test-cluster-2
+        "pending":   0,  // ✅ UPDATE: none pending now
+        "failed":    1,  // ✅ UPDATE: prod-cluster-1
         "detaching": 0,
     }
 
@@ -148,7 +148,7 @@ func (p *TestClusterPlugin) GetClusterStatusHandler(c *gin.Context) {
         "clusters": clusters,
         "summary":  summary,
         "timestamp": time.Now().Format(time.RFC3339),
-        "plugin": "GitHub Test Plugin",
+        "plugin": "GitHub Test Plugin v2", // ✅ VERSION BUMP TO VERIFY UPDATE
     }
 
     log.Printf("✅ Returning cluster status: %d clusters", len(clusters))
