@@ -118,7 +118,7 @@ func (p *TestClusterPlugin) GetClusterStatusHandler(c *gin.Context) {
     clusters := []map[string]interface{}{
         {
             "clusterName":  "test-cluster-1",
-            "status":       "ready",
+            "status":       "pending",
             "message":      "Cluster is healthy and ready",
             "lastUpdated":  time.Now().Format(time.RFC3339),
         },
@@ -131,7 +131,7 @@ func (p *TestClusterPlugin) GetClusterStatusHandler(c *gin.Context) {
         {
             "clusterName":  "prod-cluster-1",
             "status":       "pending",
-            "message":      "Connection timeout during onboarding",
+            "message":      " timeout during onboarding",
             "lastUpdated":  time.Now().Add(-10 * time.Minute).Format(time.RFC3339),
         },
     }
