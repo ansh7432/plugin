@@ -1,24 +1,97 @@
 id: kubestellar-cluster-plugin
 name: KubeStellar Cluster Management
 version: 1.0.0
-description: Plugin for cluster onboarding and detachment operations with real functionality
-author: CNCF LFX Mentee
+description: Real cluster onboarding and management plugin for KubeStellar with enhanced functionality
+author: ansh7432 (CNCF LFX Mentee)
+repository: https://github.com/ansh7432/pluginv3
+license: Apache-2.0
+
+# Go module information
+module: github.com/ansh7432/pluginv3
+go_version: "1.21"
+
+# Plugin compatibility
 compatibility:
-  kubestellar: '>=0.21.0'
-  go: '>=1.21'
+  kubestellar: ">=0.21.0"
+  go: ">=1.21"
+  kubernetes: ">=1.28.0"
+
+# API endpoints provided by the plugin
 endpoints:
-  - path: /onboard
-    method: POST
-    handler: OnboardClusterHandler
-  - path: /detach
-    method: POST
-    handler: DetachClusterHandler
-  - path: /status
-    method: GET
-    handler: GetClusterStatusHandler
+  - path: "/status"
+    method: "GET"
+    handler: "GetStatusHandler"
+    description: "Get cluster onboarding status and health information"
+  - path: "/onboard"
+    method: "POST"
+    handler: "OnboardHandler"
+    description: "Onboard a new cluster to KubeStellar"
+  - path: "/detach"
+    method: "POST"
+    handler: "DetachHandler"
+    description: "Detach a cluster from KubeStellar"
+
+# External dependencies required
 dependencies:
-  - kubectl
-  - clusteradm
+  - "kubectl"
+  - "clusteradm"
+  - "git"
+
+# Required permissions
 permissions:
-  - cluster.read
-  - cluster.write
+  - "cluster.read"
+  - "cluster.write"
+  - "configmap.read"
+  - "configmap.write"
+  - "secret.read"
+  - "csr.approve"
+  - "node.list"
+
+# Plugin capabilities
+capabilities:
+  - "cluster_onboarding"
+  - "cluster_management"
+  - "status_monitoring"
+  - "csr_approval"
+  - "label_management"
+
+# Build configuration
+build:
+  main_file: "main.go"
+  output: "kubestellar-cluster-plugin.so"
+  build_mode: "plugin"
+
+# Runtime configuration
+runtime:
+  health_check_interval: "30s"
+  timeout_onboard: "300s"
+  timeout_detach: "120s"
+  timeout_status: "30s"
+
+# Features provided (simplified)
+features:
+  - "Enhanced CSR Approval"
+  - "Cluster Labeling"
+  - "Health Verification"
+  - "Clean Detachment"
+  - "Real-time Status"
+
+# Configuration defaults
+config_defaults:
+  its_hub_kubeconfig: "~/.kube/config"
+  environment: "production"
+  managed_by: "kubestellar"
+
+# Metadata
+tags:
+  - "cluster-management"
+  - "kubestellar"
+  - "kubernetes"
+  - "onboarding"
+
+category: "cluster-management"
+official: false
+
+# Support information
+documentation_url: "https://github.com/ansh7432/pluginv3/blob/main/README.md"
+issues_url: "https://github.com/ansh7432/pluginv3/issues"
